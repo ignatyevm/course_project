@@ -4,16 +4,17 @@ Used:
 * Django 2.1.5
 * Django crispy forms 1.7.2
 * Django Tinymce 2.8.0
+* Django Autocomplete Light
 * Pillow 6.0.0
 * Bootstrap templates
 # Installation
 Python required
 Run installation.bat or use following commands to install manually
-* pip install django
-* pip install django-crispy-forms
-* pip install django-tinymce
-* pip install django-pillow
-* pip install django-autocomplete-light
+* pip install -Iv django==2.1.5
+* pip install -Iv django-crispy-forms==1.7.2
+* pip install -Iv django-tinymce==2.8.0
+* pip install -Iv django-pillow==6.0.0
+* pip install -Iv django-autocomplete-light==3.5.0
 # Launch
 py manage.py makemigrations
 
