@@ -21,58 +21,20 @@ def home(request):
             if filter_name == 'by_content':
                 q = Q()
                 for keyword in keywords:
-                    q &= Q(title__icontains=keyword)
-                    q &= Q(content__icontains=keyword)
+                    q |= Q(title__icontains=keyword)
+                    q |= Q(content__icontains=keyword)
                 posts = Post.objects.all().filter(q)
             elif filter_name == 'by_author':
-                q = Q()
-                if len(keywords) == 1:
-                    users = User.objects.all().filter(first_name=keywords[0])
-                    for user in users:
-                        print(user.first_name)
-                        q |= Q(author=user)
-                posts = Post.objects.all().filter(q)
-            elif filter_name == 'by_org':
-                q = Q()
-                for keyword in keywords:
-                    q &= Q(name__iexact=keyword)
-                organizations = Organization.objects.all().filter(q)
-                for org in organizations:
-                    profiles = Profile.objects.get(organization__exact=org)
-                    for profile in profiles:
-                        user = User.objects.get(username__exact=profile)
-
-            # title = filter_form.cleaned_data.get('title')
-            # author = filter_form.cleaned_data.get('author')
-            # organization = filter_form.cleaned_data.get('organization')
-            # journal = filter_form.cleaned_data.get('journal')
-            # keywords = filter_form.cleaned_data.get('keywords').split(' ')
-            # all_posts = Post.objects.all()
-            # posts = Post.objects.none()
-            #
-            # for keyword in keywords:
-            #     posts.add(all_posts.filter(title__icontains=keyword))
-            #     posts.add(all_posts.filter(content__icontains=keyword))
-            #     posts.add(all_posts.filter(journal__icontains=keyword))
-                # posts = posts.filter(content__icontains=keyword)
-                # posts = posts.filter(journal__icontains=keyword)
-            # try:
-            # 	user = User.objects.get(username__exact=keyword.strip())
-            # 	posts.union(posts.filter(author__exact=user))
-            # except Exception:
-            # 	pass
-        # if title.strip():
-        # 	posts = posts.filter(title__contains=title.strip())
-        # if organization.strip():
-        # 	posts = posts.filter(organization__contains=organization.strip())
-        # if journal.strip():
-        # 	posts = posts.filter(journal__contains=journal.strip())
-        # if author.strip():
-        # 	try:
-        # 		user = User.objects.get(username__exact=author.strip())
-        # 		posts = posts.filter(author__exact=user)
-        # 	except Exception:
-        # 		posts = []
+                try:
+                    q = Q()
+                    q |= Q(first_name__icontains=keywords[1])
+                    q |= Q(last_name__icontains=keywords[0])
+                    user = User.objects.all().filter(q).first()
+                    posts = Post.objects.all().filter(author__exact=user)
+                except Exception:
+                    posts = Post.objects.none()
+        else:
+            posts = Post.objects.all()
     else:
         filter_form = FilterForm()
         all_posts = Post.objects.all()
@@ -83,12 +45,9 @@ def home(request):
         else:
             posts = paginator.page(1)
 
-        for post in posts:
-            cleanr = re.compile('<.*?>')
-            post.content = re.sub(cleanr, '', post.content)
-
-
-        author = None
+    for post in posts:
+        cleanr = re.compile('<.*?>')
+        post.content = re.sub(cleanr, '', post.content)
     return render(request, 'blog/home.html', {'posts': posts, 'filter': {'form': filter_form}})
 
 
