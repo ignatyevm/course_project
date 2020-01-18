@@ -17,20 +17,17 @@ def home(request):
         filter_form = FilterForm(request.POST)
         if filter_form.is_valid():
             filter_name = filter_form.cleaned_data.get('filter_name')
-            keywords = filter_form.cleaned_data.get('keywords').lower().split(' ')
+            keywords = filter_form.cleaned_data.get('keywords').split(' ')
             if filter_name == 'by_content':
                 q = Q()
                 for keyword in keywords:
-                    q |= Q(title__icontains=keyword)
-                    q |= Q(content__icontains=keyword)
+                    q |= Q(title__icontains=keyword.lower())
+                    q |= Q(content__icontains=keyword.lower())
                 posts = Post.objects.all().filter(q)
             elif filter_name == 'by_author':
                 try:
-                    q = Q()
-                    q |= Q(first_name__icontains=keywords[1])
-                    q |= Q(last_name__icontains=keywords[0])
-                    user = User.objects.all().filter(q).first()
-                    posts = Post.objects.all().filter(author__exact=user)
+                    user = User.objects.filter(first_name__iexact=keywords[0]).filter(last_name__iexact=keywords[1]).first()
+                    posts = Post.objects.filter(author__exact=user)
                 except Exception:
                     posts = Post.objects.none()
         else:
@@ -74,8 +71,12 @@ def post_detail(request, pk=None):
             return redirect('post-detail', pk)
     else:
         form = CommentForm()
+    comments = post.comment_set.all()
+    for comment in comments:
+        cleanr = re.compile('<.*?>')
+        comment.content = re.sub(cleanr, '', comment.content)
     return render(request, 'blog/post_detail.html', {
-        'object': post, 'form': form, 'comments': post.comment_set.all(), 'size': round(post.file.size / 2.0 ** 20, 2)
+        'object': post, 'form': form, 'comments': comments, 'size': round(post.file.size / 2.0 ** 20, 2)
     })
 
 
