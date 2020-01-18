@@ -5,10 +5,19 @@ from crispy_forms.layout import Layout
 
 
 class FilterForm(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Название'}), label='', max_length=100, required=False)
-    author = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Автор'}), label='', max_length=100, required=False)
-    organization = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Организация'}), label='', max_length=100, required=False)
-    journal = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Журнал'}), label='', max_length=100, required=False)
+    filters = [('by_author', 'По автору'),
+               ('by_org', 'По организации'),
+               ('by_content', 'По содержанию')]
+
+    filter_name = forms.ChoiceField(choices=filters, widget=forms.RadioSelect, label='Выберите критерий поиска')
+    keywords = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Ключевые слова'}), label='',
+                               max_length=300,
+                               required=True)
+    # title = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Название'}), label='', max_length=100, required=False)
+    # author = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Автор'}), label='', max_length=100, required=False)
+    # organization = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Организация'}), label='', max_length=100, required=False)
+    # journal = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Журнал'}), label='', max_length=100, required=False)
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -26,6 +35,7 @@ class CommentForm(forms.ModelForm):
         comment.post = post
         comment.save()
         return comment
+
 
 class PostForm(forms.ModelForm):
     class Meta:
