@@ -34,7 +34,7 @@ def home(request):
             posts = Post.objects.all()
     else:
         filter_form = FilterForm()
-        all_posts = Post.objects.all()
+        all_posts = Post.objects.all().reverse()
         page = request.GET.get('page')
         paginator = Paginator(all_posts, 7)
         if page:
@@ -76,7 +76,7 @@ def post_detail(request, pk=None):
         cleanr = re.compile('<.*?>')
         comment.content = re.sub(cleanr, '', comment.content)
     return render(request, 'blog/post_detail.html', {
-        'object': post, 'form': form, 'comments': comments, 'size': round(post.file.size / 2.0 ** 20, 2)
+        'role': str(request.user.groups.first()), 'object': post, 'form': form, 'comments': comments, 'size': round(post.file.size / 2.0 ** 20, 2)
     })
 
 
