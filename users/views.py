@@ -29,23 +29,23 @@ def sign_up(request):
 
 @login_required
 def user_update_profile(request, pk):
-    if not (request.user.id == pk):
+    if str(request.user.groups.first()) != "Moderator" and not (request.user.id == pk):
         return HttpResponseForbidden()
 
-    profile = request.user.profile
+    profile = Profile.objects.get(pk=pk)
 
     if request.method == 'POST':
-        uform = UserUpdateForm(request.POST, instance=request.user)
-        pform = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        uform = UserUpdateForm(request.POST, instance=profile.user)
+        pform = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
 
         if uform.is_valid() and pform.is_valid():
-            user = uform.save(request.user.username)
-            pform.save(user)
+            user = uform.save(profile.user.username)
+            pform.save(profile.user)
             messages.success(request, f'Account has been updated')
             return redirect('user-detail', profile.id)
     else:
-        uform = UserUpdateForm(instance=request.user)
-        pform = ProfileUpdateForm(instance=request.user.profile)
+        uform = UserUpdateForm(instance=profile.user)
+        pform = ProfileUpdateForm(instance=profile)
 
     return render(request, 'users/profile_update.html', {'uform': uform, 'pform': pform, 'profile': profile})
 
@@ -72,16 +72,17 @@ class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixi
         return False
 
     def get_success_message(self, cleaned_data):
-        return success_message
+        return self.success_message
 
 
 def user_detail(request, pk):
     profile = Profile.objects.get(id__exact=pk)
-    return render(request, 'users/profile_detail.html', {'object': profile, 'grants': profile.grant_set.all()})
+    return render(request, 'users/profile_detail.html', {'role': str(request.user.groups.first()), 'object': profile, 'grants': profile.grant_set.all()})
+
 
 def grant_add(request, pk):
     profile = request.user.profile
-    if not (profile.id == pk):
+    if str(request.user.groups.first()) != "Moderator" and not (request.user.id == pk):
         return HttpResponseForbidden()
 
     if request.method == 'POST':
@@ -91,7 +92,7 @@ def grant_add(request, pk):
             return redirect('user-detail', profile.id)
     else:
         form = GrantForm()
-    return render(request, 'users/grant_add.html', {'profile': profile, 'form': form})
+    return render(request, 'users/grant_add.html', {'profile': Profile.objects.get(pk=pk), 'form': form})
 
 class OrganizationAutocomplete(autocomplete.Select2QuerySetView):
      def get_queryset(self):
