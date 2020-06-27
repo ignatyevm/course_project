@@ -12,26 +12,34 @@ from django.db.models import Q
 
 
 def home(request):
-    posts = None
+    posts = []
     if request.method == 'POST':
         filter_form = FilterForm(request.POST)
         if filter_form.is_valid():
-            filter_name = filter_form.cleaned_data.get('filter_name')
-            keywords = filter_form.cleaned_data.get('keywords').split(' ')
-            if filter_name == 'by_content':
+            content = filter_form.cleaned_data.get('content').strip()
+            author = filter_form.cleaned_data.get('author')
+            organization = filter_form.cleaned_data.get('organization')
+            journal = filter_form.cleaned_data.get('journal')
+            if content:
+                content = content.split(' ')
                 q = Q()
-                for keyword in keywords:
+                for keyword in content:
                     q |= Q(title__icontains=keyword.lower())
                     q |= Q(content__icontains=keyword.lower())
-                posts = Post.objects.all().filter(q)
-            elif filter_name == 'by_author':
-                try:
-                    user = User.objects.filter(first_name__iexact=keywords[0]).filter(last_name__iexact=keywords[1]).first()
-                    posts = Post.objects.filter(author__exact=user)
-                except Exception:
-                    posts = Post.objects.none()
-        else:
-            posts = Post.objects.all()
+                posts += Post.objects.all().filter(q).all()
+            if author:
+                author = author.split(' ')
+                if len(author) == 1:
+                    posts += Post.objects.filter(
+                        Q(author__first_name__icontains=author[0]) | Q(author__last_name__icontains=author[0])).all()
+                elif len(author) == 2:
+                    posts += Post.objects.filter(
+                        (Q(author__first_name__icontains=author[0]) & Q(author__last_name__icontains=author[1])) |
+                        (Q(author__first_name__icontains=author[1]) & Q(author__last_name__icontains=author[0]))).all()
+            if organization:
+                posts += Post.objects.filter(author__profile__organization__name__icontains=organization).all()
+            if journal:
+                posts += Post.objects.filter(journal__icontains=journal).all()
     else:
         filter_form = FilterForm()
         all_posts = Post.objects.all().reverse()
