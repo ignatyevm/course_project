@@ -1,6 +1,7 @@
 import re
 
 from django.core.paginator import Paginator
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment
@@ -26,23 +27,23 @@ def home(request):
                 for keyword in content:
                     q |= Q(title__icontains=keyword.lower())
                     q |= Q(content__icontains=keyword.lower())
-                posts += Post.objects.all().filter(q).all()
+                posts += Post.objects.all().filter(has_moderated=True).filter(q).all()
             if author:
                 author = author.split(' ')
                 if len(author) == 1:
-                    posts += Post.objects.filter(
+                    posts += Post.objects.filter(has_moderated=True).filter(
                         Q(author__first_name__icontains=author[0]) | Q(author__last_name__icontains=author[0])).all()
                 elif len(author) == 2:
-                    posts += Post.objects.filter(
+                    posts += Post.objects.filter(has_moderated=True).filter(
                         (Q(author__first_name__icontains=author[0]) & Q(author__last_name__icontains=author[1])) |
                         (Q(author__first_name__icontains=author[1]) & Q(author__last_name__icontains=author[0]))).all()
             if organization:
-                posts += Post.objects.filter(author__profile__organization__name__icontains=organization).all()
+                posts += Post.objects.filter(has_moderated=True).filter(author__profile__organization__name__icontains=organization).all()
             if journal:
-                posts += Post.objects.filter(journal__icontains=journal).all()
+                posts += Post.objects.filter(has_moderated=True).filter(journal__icontains=journal).all()
     else:
         filter_form = FilterForm()
-        all_posts = Post.objects.all().reverse()
+        all_posts = Post.objects.all().filter(has_moderated=True).reverse()
         page = request.GET.get('page')
         paginator = Paginator(all_posts, 7)
         if page:
@@ -56,6 +57,12 @@ def home(request):
     return render(request, 'blog/home.html', {'posts': posts, 'filter': {'form': filter_form}})
 
 
+def view_my_posts(request):
+    my_posts = Post.objects.all().filter(author_id=request.user.id).filter(has_moderated=False)
+    print(my_posts)
+    return render(request, 'blog/my_posts.html', {'posts': my_posts})
+
+
 class PostListView(ListView):
     model = Post
     template_name = 'blog/home.html'
@@ -66,6 +73,15 @@ class PostListView(ListView):
 def view_posts(request, pk):
     author = Profile.objects.get(pk__exact=pk).user
     return render(request, 'blog/home.html', {'objects': author.post_set.all()})
+
+
+def view_suggested_posts(request):
+    if str(request.user.groups.first()) != 'Moderator':
+        return HttpResponseForbidden()
+    posts = Post.objects.all().filter(has_moderated=False)
+    return render(request, 'blog/suggested_posts.html', {
+        'posts': posts
+    })
 
 
 def post_detail(request, pk=None):
@@ -84,7 +100,7 @@ def post_detail(request, pk=None):
         cleanr = re.compile('<.*?>')
         comment.content = re.sub(cleanr, '', comment.content)
     return render(request, 'blog/post_detail.html', {
-        'role': str(request.user.groups.first()), 'object': post, 'form': form, 'comments': comments, 'size': round(post.file.size / 2.0 ** 20, 2)
+        'object': post, 'form': form, 'comments': comments, 'size': round(post.file.size / 2.0 ** 20, 2)
     })
 
 
@@ -139,3 +155,13 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == post.author or not self.request.user.profile.access == 'Пользователь':
             return True
         return False
+
+
+def view_publish_post(request, pk):
+    if str(request.user.groups.first()) != 'Moderator':
+        return HttpResponseForbidden()
+    post = Post.objects.get(pk=pk)
+    post.has_moderated = True
+    post.save()
+    return redirect('blog-home')
+

@@ -33,7 +33,7 @@
 				{% endfor %}
 			</div>
 		</div>
-		{% if user == object.user or role == 'Moderator' %}
+		{% if user == object.user or role == 'moderator' %}
 			<div class="text-center">
 				<a class="btn bg-blue text-white" href="{% url 'grant_add' object.id %}">Добавить грант</a>
 				<a class="btn bg-blue text-white" href="{% url 'user-detail-update' object.id %}">Обновить</a>
