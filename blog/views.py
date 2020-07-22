@@ -21,7 +21,7 @@ def home(request):
             organization = filter_form.cleaned_data.get('organization')
             journal = filter_form.cleaned_data.get('journal')
             if content:
-                content = content.split(' ')
+                content = content.split('.')
                 q = Q()
                 for keyword in content:
                     q |= Q(title__icontains=keyword.lower())
