@@ -1,0 +1,113 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
+{% crispy filter_form filter_form.helper %}
+{% block content %}
+    <script src="https://cdn.tiny.cloud/1/5ajckg3ovoim2iyeshxnla5dbdif2o0f6xbt9ylee30w5bau/tinymce/5/tinymce.min.js"></script>
+    <script>tinymce.init({selector: 'textarea'});</script>
+    {% if not filter.author == None %}
+        <h1 class="my-4">
+            Статьи {{ filter.author.first_name }} {{ filter.author.second_name }}
+        </h1>
+    {% endif %}
+
+    <br/>
+
+    {% for post in posts %}
+        <div class="row mb-2">
+            <div class="col-md-12">
+                <div class="card mb-4 shadow-lg pb-1">
+                    <div class="card-body">
+                        <a class="card-title" href="{% url 'post-detail' post.id %}">
+                            <h2>
+                                {{ post.title }}
+                            </h2>
+                        </a>
+                        <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>
+                    </div>
+                    <!-- FIX IT -->
+                    <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">
+                        <div class="col text-left">
+                            <a href="{% url 'user-detail' post.author.profile.id %}">
+                                {{ post.author.first_name }} {{ post.author.last_name }}
+                            </a>
+                            {{ post.date|date:"F d, Y" }} {{ post.journal }} {{ post.volume }} {{ post.number }}
+                        </div>
+                        <div class="col text-right">
+                            <a href="{% url 'post-detail' post.id %}">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="row mb-2">
+        <ul class="pagination" style="display: flex; justify-content: center;">
+
+            {% if posts.has_previous %}
+                <li><a href="?page={{ posts.previous_page_number }}"><i class="fa fa-chevron-left"
+                                                                        aria-hidden="true"></i></a></li>
+            {% else %}
+                <li class="disabled"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></li>
+            {% endif %}
+
+            {% if posts.number|add:'-4' > 1 %}
+                <li><a href="?page={{ posts.number|add:'-5' }}">&hellip;</a></li>
+            {% endif %}
+
+            {% for i in posts.paginator.page_range %}
+                {% if posts.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                {% elif i > posts.number|add:'-5' and i < posts.number|add:'5' %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if posts.paginator.num_pages > posts.number|add:'4' %}
+                <li><a href="?page={{ posts.number|add:'5' }}">&hellip;</a></li>
+            {% endif %}
+
+            {% if posts.has_next %}
+                <li><a href="?page={{ posts.next_page_number }}"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+                </li>
+            {% else %}
+                <li class="disabled"><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></li>
+            {% endif %}
+
+        </ul>
+    </div>
+
+    <!--
+    <ul class="pagination justify-content-center mb-4">
+        <li class="page-item">
+            <a class="page-link" href="#">&larr; Older</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" href="#">Newer &rarr;</a>
+        </li>
+    </ul>
+    -->
+{% endblock content %}
+
+{% block sidebar %}
+    <!-- Search Widget --
+    <div class="card shadow-lg">
+        <h5 class="card-header">Search</h5>
+        <div class="card-body">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-secondary" type="button">Go!</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    -->
+    <!-- Filter Widget -->
+    <!-- Categories Widget
+    <div class="card my-4 shadow-lg">
+        <h5 class="card-header">Categories</h5>
+        <div class="card-body">
+        </div>
+    </div>
+    -->
+{% endblock %}
