@@ -48,6 +48,16 @@
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{% url 'post-create' %}">Отправить статью</a>
                 </li>
+                {% if my_posts_count > 0 %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'my-posts' %}">Мои статьи на модерации ({{ my_posts_count }})</a>
+                    </li>
+                {% endif %}
+                {% if role == 'moderator' %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'suggested-post' %}">Предлагаемые статьи</a>
+                    </li>
+                {% endif %}
                 {% if user.profile.access == 'admin' %}
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'admin-panel' %}">Панель управления</a>

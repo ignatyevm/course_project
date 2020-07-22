@@ -77,7 +77,7 @@ class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixi
 
 def user_detail(request, pk):
     profile = Profile.objects.get(id__exact=pk)
-    return render(request, 'users/profile_detail.html', {'role': str(request.user.groups.first()), 'object': profile, 'grants': profile.grant_set.all()})
+    return render(request, 'users/profile_detail.html', {'object': profile, 'grants': profile.grant_set.all()})
 
 
 def grant_add(request, pk):

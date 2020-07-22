@@ -69,7 +69,7 @@
 			</form>
 		</div>
 
-		{% if object.author == user or role == 'Moderator' %}
+		{% if object.author == user or role == 'moderator' %}
 		<div class="text-center">
 			<a class="btn btn-dark text-white" href="{% url 'post-update' object.id %}">Update</a>
 			<a class="btn btn-danger text-white" href="{% url 'post-delete' object.id %}">Delete</a>

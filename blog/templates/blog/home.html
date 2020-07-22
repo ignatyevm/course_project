@@ -40,30 +40,11 @@
 
     <br/>
 
+    {%  if my_posts|length > 0 %}
+        <h1>Ваши статьи на модерации ({{ my_posts|length }})</h1>
+    {% endif %}
+
     {% for post in posts %}
-        {#<div class="card mb-4 shadow-lg pb-1">#}
-        {#    <div class="card-body">#}
-        {#        <a class="card-title" href="{% url 'post-detail' post.id %}">#}
-        {#            <h2>#}
-        {#                {{ post.title }}#}
-        {#            </h2>#}
-        {#        </a>#}
-        {#        <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>#}
-        {#        <!-- <a href="#" class="btn btn-primary">Read More &rarr;</a> -->#}
-        {#    </div>#}
-        {#    <!-- FIX IT -->#}
-        {#    <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">#}
-        {#        <div class="col text-left">#}
-        {#            <a href="{% url 'user-detail' post.author.profile.id %}">#}
-        {#                {{ post.author.first_name }} {{ post.author.last_name }}#}
-        {#            </a>#}
-        {#            {{ post.date|date:"F d, Y" }} {{ post.journal }} {{ post.volume }} {{ post.number }}#}
-        {#        </div>#}
-        {#        <div class="col text-right">#}
-        {#            <a href="{% url 'post-detail' post.id %}">Подробнее</a>#}
-        {#        </div>#}
-        {#    </div>#}
-        {#</div>#}
         <div class="row mb-2">
         <div class="col-md-12">
          <div class="card mb-4 shadow-lg pb-1">
@@ -74,7 +55,6 @@
                     </h2>
                 </a>
                 <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>
-                <!-- <a href="#" class="btn btn-primary">Read More &rarr;</a> -->
             </div>
             <!-- FIX IT -->
             <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">
