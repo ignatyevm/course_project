@@ -1,53 +1,53 @@
 {% extends 'blog/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-<script src="https://cdn.tiny.cloud/1/5ajckg3ovoim2iyeshxnla5dbdif2o0f6xbt9ylee30w5bau/tinymce/5/tinymce.min.js"></script>
-<script>tinymce.init({selector:'textarea'});</script>
+    <script src="https://cdn.tiny.cloud/1/5ajckg3ovoim2iyeshxnla5dbdif2o0f6xbt9ylee30w5bau/tinymce/5/tinymce.min.js"></script>
+    <script>tinymce.init({selector: 'textarea'});</script>
     <!-- <h1 class="my-4">Статья №{{ object.id }}</h1> -->
-    {% comment %}<div class="card mb-4 shadow-lg">
-            <div class="card-body">
-                <div class="container pl-0">
-                    <h2 class="card-title">{{ object.name }}</h2>
-                </div>
-                <div class="container pl-0">
-                    <p class="card-text">{{ object.description | safe | escape }}</p>
-                </div>
-                <div class="container pl-0">
-                    <p class="card-text">{{ object.constitutors }}</p>
-                    <p class="card-text">{{ object.date }}</p>
-                    <p class="card-text">{{ object.address }}</p>
-                    {% if object.link %}
-                        <p class="card-text">{{ object.link }}</p>
-                    {% endif %}
-                </div>
-                <!-- <a href="#" class="btn btn-primary">Read More &rarr;</a> -->
+    <div class="card mb-4 shadow-lg">
+        <div class="card-body">
+            <div class="container pl-0">
+                <h2 class="card-title">{{ object.name }}</h2>
             </div>
-    </div>{% endcomment %}
+            <div class="container pl-0">
+                <p class="card-text">{{ object.description | safe | escape }}</p>
+            </div>
+            <div class="container pl-0">
+                <p class="card-text">{{ object.constitutors }}</p>
+                <p class="card-text">{{ object.date }}</p>
+                <p class="card-text">{{ object.address }}</p>
+                {% if object.link %}
+                    <p class="card-text">{{ object.link }}</p>
+                {% endif %}
+            </div>
+            <!-- <a href="#" class="btn btn-primary">Read More &rarr;</a> -->
+        </div>
+    </div>
 
     {% for post in posts %}
-<div>
-                <div class="card mb-4 shadow-lg">
-                    <div class="card-body">
-                        <a class="card-title" href="{% url 'post-detail' post.id %}">
-                            <h2>
-                                {{ post.title }}
-                            </h2>
+        <div>
+            <div class="card mb-4 shadow-lg">
+                <div class="card-body">
+                    <a class="card-title" href="{% url 'post-detail' post.id %}">
+                        <h2>
+                            {{ post.title }}
+                        </h2>
+                    </a>
+                    <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>
+                </div>
+                <!-- FIX IT -->
+                <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">
+                    <div class="col text-left">
+                        <a href="{% url 'user-detail' post.author.profile.id %}">
+                            {{ post.author.first_name }} {{ post.author.last_name }}
                         </a>
-                        <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>
+                        {{ post.date|date:"F d, Y" }} {{ post.journal }} {{ post.volume }} {{ post.number }}
                     </div>
-                    <!-- FIX IT -->
-                    <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">
-                        <div class="col text-left">
-                            <a href="{% url 'user-detail' post.author.profile.id %}">
-                                {{ post.author.first_name }} {{ post.author.last_name }}
-                            </a>
-                            {{ post.date|date:"F d, Y" }} {{ post.journal }} {{ post.volume }} {{ post.number }}
-                        </div>
-                        <div class="col text-right">
-                            <a href="{% url 'post-detail' post.id %}">Подробнее</a>
-                        </div>
+                    <div class="col text-right">
+                        <a href="{% url 'post-detail' post.id %}">Подробнее</a>
                     </div>
                 </div>
             </div>
+        </div>
     {% endfor %}
 {% endblock content %}

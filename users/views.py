@@ -97,6 +97,7 @@ def grant_add(request, pk):
         form = GrantForm()
     return render(request, 'users/grant_add.html', {'profile': Profile.objects.get(pk=pk), 'form': form})
 
+
 class OrganizationAutocomplete(autocomplete.Select2QuerySetView):
      def get_queryset(self):
         orgs = Organization.objects.all()
@@ -124,9 +125,7 @@ class OrganizationDetailView(DetailView):
 def organization_detail(request, pk):
     try:
         organization = Organization.objects.get(id=pk)
-        organization_posts = Post.objects.all().filter(author__profile__organization_id=pk)
-        print(len(organization_posts))
-        print(organization_posts)
+        organization_posts = Post.objects.all().filter(author__profile__organization_id=pk).reverse()
         return render(request, 'users/organization_detail.html', {'object': organization, 'posts': organization_posts})
     except ObjectDoesNotExist:
         return HttpResponseNotFound()
