@@ -59,7 +59,6 @@ def home(request):
 
 def view_my_posts(request):
     my_posts = Post.objects.all().filter(author_id=request.user.id).filter(has_moderated=False)
-    print(my_posts)
     return render(request, 'blog/my_posts.html', {'posts': my_posts})
 
 
@@ -165,3 +164,12 @@ def view_publish_post(request, pk):
     post.save()
     return redirect('blog-home')
 
+
+def delete_several_posts(request):
+    print(request.POST)
+    return redirect('blog-home')
+
+
+def publish_several_posts(request):
+
+    return None

@@ -13,33 +13,11 @@
     <br/>
 
     {% for post in posts %}
-        {#<div class="card mb-4 shadow-lg pb-1">#}
-        {#    <div class="card-body">#}
-        {#        <a class="card-title" href="{% url 'post-detail' post.id %}">#}
-        {#            <h2>#}
-        {#                {{ post.title }}#}
-        {#            </h2>#}
-        {#        </a>#}
-        {#        <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>#}
-        {#        <!-- <a href="#" class="btn btn-primary">Read More &rarr;</a> -->#}
-        {#    </div>#}
-        {#    <!-- FIX IT -->#}
-        {#    <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">#}
-        {#        <div class="col text-left">#}
-        {#            <a href="{% url 'user-detail' post.author.profile.id %}">#}
-        {#                {{ post.author.first_name }} {{ post.author.last_name }}#}
-        {#            </a>#}
-        {#            {{ post.date|date:"F d, Y" }} {{ post.journal }} {{ post.volume }} {{ post.number }}#}
-        {#        </div>#}
-        {#        <div class="col text-right">#}
-        {#            <a href="{% url 'post-detail' post.id %}">Подробнее</a>#}
-        {#        </div>#}
-        {#    </div>#}
-        {#</div>#}
         <div class="row mb-2">
             <div class="col-md-12">
                 <div class="card mb-4 shadow-lg pb-1">
                     <div class="card-body">
+                         <input type="checkbox" name="{{ post.id }}"/>
                         <a class="card-title" href="{% url 'post-detail' post.id %}">
                             <h2>
                                 {{ post.title }}
@@ -61,13 +39,16 @@
                         </div>
                         <div class="text-center">
 				            <a class="btn bg-blue text-white" href="{% url 'post-publish' post.id %}">Опубликовать</a>
-				            <a class="btn btn-danger" href="{% url 'post-delete' post.id %}">Удалить</a>
+				            <a class="btn btn-danger text-white" href="{% url 'post-delete' post.id %}">Удалить</a>
 			            </div>
                     </div>
                 </div>
             </div>
         </div>
     {% endfor %}
+    <a class="btn bg-blue text-white" href="">Опубликовать выделенное</a>
+    <a class="btn btn-danger text-white" href="">Удалить выделенное</a>
+
     <div class="row mb-2">
         <ul class="pagination" style="display: flex; justify-content: center;">
 

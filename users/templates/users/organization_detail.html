@@ -4,8 +4,7 @@
 <script src="https://cdn.tiny.cloud/1/5ajckg3ovoim2iyeshxnla5dbdif2o0f6xbt9ylee30w5bau/tinymce/5/tinymce.min.js"></script>
 <script>tinymce.init({selector:'textarea'});</script>
     <!-- <h1 class="my-4">Статья №{{ object.id }}</h1> -->
-    <div class="container p-0 mb-5">
-        <div class="card mb-4 shadow-lg">
+    {% comment %}<div class="card mb-4 shadow-lg">
             <div class="card-body">
                 <div class="container pl-0">
                     <h2 class="card-title">{{ object.name }}</h2>
@@ -23,15 +22,32 @@
                 </div>
                 <!-- <a href="#" class="btn btn-primary">Read More &rarr;</a> -->
             </div>
-        </div>
-    </div>
+    </div>{% endcomment %}
 
-	{% if object.author == user or not user.profile.access == 'Пользователь' %}
-	<div class="text-center">
-		<a class="btn btn-dark text-white" href="{% url 'post-update' object.id %}">Update</a>
-		<a class="btn btn-danger text-white" href="{% url 'post-delete' object.id %}">Delete</a>
-	</div>
-	{% endif %}
+    {% for post in posts %}
+<div class="container">
+                <div class="card mb-4 shadow-lg">
+                    <div class="card-body">
+                        <a class="card-title" href="{% url 'post-detail' post.id %}">
+                            <h2>
+                                {{ post.title }}
+                            </h2>
+                        </a>
+                        <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>
+                    </div>
+                    <!-- FIX IT -->
+                    <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">
+                        <div class="col text-left">
+                            <a href="{% url 'user-detail' post.author.profile.id %}">
+                                {{ post.author.first_name }} {{ post.author.last_name }}
+                            </a>
+                            {{ post.date|date:"F d, Y" }} {{ post.journal }} {{ post.volume }} {{ post.number }}
+                        </div>
+                        <div class="col text-right">
+                            <a href="{% url 'post-detail' post.id %}">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    {% endfor %}
 {% endblock content %}
-
-				

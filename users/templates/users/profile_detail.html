@@ -9,7 +9,7 @@
 				<div class="media-body">
 					<h2 class="card-title">{{ object.user.first_name }} {{ object.user.last_name }}</h2>
 					<!-- <h5 class="card-text"><p>Права доступа: {{ object.access }}</p></h5> -->
-					<p>Организация: {{ object.organization }}</p>
+                    <p>Организация: <a href="{% url 'organization-detail' object.organization_id %}">{{ object.organization.name }}</a></p>
 					<p>Должность: {{ object.position }}</p>
 					<p>Степень: {{ object.degree }}</p>
 					<p>Профиль РИНЦ: {{ object.link }}</p>

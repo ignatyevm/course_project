@@ -1,8 +1,11 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.contrib import messages
+
+from blog.models import Post
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, GrantForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseNotFound
 from django.contrib.auth.models import User
 from django.views.generic import CreateView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -103,6 +106,7 @@ class OrganizationAutocomplete(autocomplete.Select2QuerySetView):
 
         return orgs
 
+
 class OrganizationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Organization
     fields = ['name', 'date', 'constitutors', 'address', 'link', 'description']
@@ -112,5 +116,18 @@ class OrganizationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
             return True
         return False
 
+
 class OrganizationDetailView(DetailView):
     model = Organization
+
+
+def organization_detail(request, pk):
+    try:
+        organization = Organization.objects.get(id=pk)
+        organization_posts = Post.objects.all().filter(author__profile__organization_id=pk)
+        print(len(organization_posts))
+        print(organization_posts)
+        return render(request, 'users/organization_detail.html', {'object': organization, 'posts': organization_posts})
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound()
+
