@@ -36,7 +36,7 @@
                     <p class="card-text">{{ post.content|truncatewords:100|safe|escape }}</p>
                 </div>
                 <!-- FIX IT -->
-                <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0">
+                <div class="row card-footer bg-white ml-1 mr-1 pl-0 pr-0" style="margin-bottom: 1px">
                     <div class="col text-left">
                         <a href="{% url 'user-detail' post.author.profile.id %}">
                             {{ post.author.first_name }} {{ post.author.last_name }}
