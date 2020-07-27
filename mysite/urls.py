@@ -17,7 +17,7 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('organization-autocomplete', user_views.OrganizationAutocomplete.as_view(), name='organization-autocomplete'),
     path('organization/new', user_views.OrganizationCreateView.as_view(), 'organization-create'),
-    path('organization/<int:pk>', user_views.OrganizationDetailView.as_view(), 'organization-detail'),
+    path('organization/<int:pk>', user_views.organization_detail, name='organization-detail'),
 
 ]
 
