@@ -125,7 +125,7 @@ class OrganizationDetailView(DetailView):
 def organization_detail(request, pk):
     try:
         organization = Organization.objects.get(id=pk)
-        organization_posts = Post.objects.all().filter(author__profile__organization_id=pk).reverse()
+        organization_posts = Post.objects.all().filter(author__profile__organization_id=pk).filter(has_moderated=True).reverse()
         return render(request, 'users/organization_detail.html', {'object': organization, 'posts': organization_posts})
     except ObjectDoesNotExist:
         return HttpResponseNotFound()

@@ -17,7 +17,6 @@
             <div class="col-md-12">
                 <div class="card mb-4 shadow-lg pb-1">
                     <div class="card-body">
-                         <input type="checkbox" name="{{ post.id }}"/>
                         <a class="card-title" href="{% url 'post-detail' post.id %}">
                             <h2>
                                 {{ post.title }}
@@ -46,8 +45,6 @@
             </div>
         </div>
     {% endfor %}
-    <a class="btn bg-blue text-white" href="">Опубликовать выделенное</a>
-    <a class="btn btn-danger text-white" href="">Удалить выделенное</a>
 
     <div class="row mb-2">
         <ul class="pagination" style="display: flex; justify-content: center;">
